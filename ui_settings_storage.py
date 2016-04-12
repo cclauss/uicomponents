@@ -4,14 +4,10 @@ def store_settings(view):
     '''return a dictionary suitable for storing as json or other method, which stores the value,selected_index,or text attribute of any ui component that has a stored attribute set True'''
     if getattr(view,'subviews',False):
         output={}
-        for i,sv in enumerate(view.subviews):
+        for i, sv in enumerate(view.subviews):
             output_tmp=store_settings(sv)
             if output_tmp:
-                if sv.name:
-                    key=sv.name
-                else:
-                    key=i #need json keys to be str
-                output[key]=output_tmp
+                output[sv.name or i]=output_tmp
         return output
     else:
         if getattr(view,'stored',False):
@@ -24,13 +20,9 @@ def store_settings(view):
                     
 def restore_settings(view, stored_value):
     '''restore settings to viee from the stored settings.  stored_value should be a dict returned from store_settings.'''
-    for i,sv in enumerate(view.subviews):
-        if sv.name:
-            key=sv.name
-        else:
-            key=i
+    for i, sv in enumerate(view.subviews):
         try:
-            restore_settings(sv,stored_value[key])
+            restore_settings(sv,stored_value[sv.name or i])
         except KeyError:
             pass
     if hasattr(view,'value'):
